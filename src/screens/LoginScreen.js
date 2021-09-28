@@ -9,7 +9,7 @@ export default function LoginScreen({ navigation }) {
 
   const handleLogin = (userEmail, userPass) => {
     auth()
-      .signInWithEmailAndPassword('testmode@gmail.com', 'johnldsantos')
+      .signInWithEmailAndPassword(userEmail, userPass)
       .then(() => {
         console.log('User successfully login');
         // setEmail(null);

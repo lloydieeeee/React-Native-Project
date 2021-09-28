@@ -13,8 +13,36 @@ const Stack = createStackNavigator()
 const userContext = createContext()
 
 function MainScreen({ navigation }) {
+  const userData = useContext(userContext)
+
+  useEffect(() => {
+    firestore()
+      .collection('Users')
+      .doc(userData.uid)
+      .get()
+      .then(documentSnapshot => {
+        console.log('User exists: ', documentSnapshot.exists);
+    
+        if (documentSnapshot.exists) {
+          console.log('User data: ', documentSnapshot.data());
+          setState(documentSnapshot.data())
+        }
+      });
+  }, [userData])
+
+  const handleLogout = () => {
+    auth()
+      .signOut()
+      .then(() => console.log('User signed out!'));
+  }
+
   return (
     <View style={styles.root}>
+      <View style={styles.logoutText}>
+        <TouchableOpacity onPress={() => handleLogout()}>
+          <Text style={{ color: '#0000ff', fontWeight: '500' }}>Logout</Text>
+        </TouchableOpacity>
+      </View>
       <View style={styles.editText}>
         <TouchableOpacity onPress={() => navigation.navigate('Edit')}>
           <Text style={{ color: '#0000ff', fontWeight: '500' }}>Edit</Text>
@@ -22,11 +50,11 @@ function MainScreen({ navigation }) {
       </View>
       <View style={styles.rowContainer}>
         <Text style={styles.text}>Email Address:</Text>
-        <Text style={styles.info}>Dummy Email</Text>
+        <Text style={styles.info}></Text>
       </View>
       <View style={styles.rowContainer}>
         <Text style={styles.text}>First Name:</Text>
-        <Text style={styles.info}>Dummy First Name</Text>
+        <Text style={styles.info}></Text>
       </View>
       <View style={styles.rowContainer}>
         <Text style={styles.text}>Last Name:</Text>
@@ -40,6 +68,19 @@ function EditScreen({ navigation }){
   const userData = useContext(userContext)
   const [firstName, setFirstName] = useState(null);
   
+  const handleClick = (id, email) => {
+    firestore()
+      .collection('Users')
+      .doc(id)
+      .update({
+        emailAddress: email,
+        firstName: firstName
+      })
+      .then(() => {
+        console.log('User updated!');
+      });
+  }
+
   return (
     <View>
       <TextInput
@@ -47,7 +88,7 @@ function EditScreen({ navigation }){
         value={firstName}
         onChangeText={fName => setFirstName(fName)}
       />
-      <Button title="Done" />
+      <Button title="Done" onPress={() => { handleClick(userData.uid, userData.email); navigation.navigate('Main'); } } />
     </View>
   )
 }
@@ -60,12 +101,6 @@ export default function UserAccount() {
 
   const handleClicked = () => {
     setClicked(true);
-  }
-
-  const handleLogout = () => {
-    auth()
-      .signOut()
-      .then(() => console.log('User signed out!'));
   }
 
   function onAuthStateChanged(user) {
@@ -95,29 +130,8 @@ export default function UserAccount() {
       </Stack.Navigator>
     )
   }
-
-    
   
   return (
-    // <View style={styles.root}>
-    //   <View style={styles.editText}>
-    //     <TouchableOpacity>
-    //       <Text style={{ color: '#0000ff', fontWeight: '500' }}>Edit</Text>
-    //     </TouchableOpacity>
-    //   </View>
-    //   <View style={styles.rowContainer}>
-    //     <Text style={styles.text}>Email Address:</Text>
-    //     <Text style={styles.info}>Dummy Email</Text>
-    //   </View>
-    //   <View style={styles.rowContainer}>
-    //     <Text style={styles.text}>First Name:</Text>
-    //     <Text style={styles.info}>Dummy First Name</Text>
-    //   </View>
-    //   <View style={styles.rowContainer}>
-    //     <Text style={styles.text}>Last Name:</Text>
-    //     <Text style={styles.info}>Dummy Last Name</Text>
-    //   </View>
-    // </View>
     <userContext.Provider value={user}>
       <Stack.Navigator>
         <Stack.Screen name="Main" component={MainScreen} options={{ headerShown: false}} />
@@ -148,7 +162,11 @@ const styles = StyleSheet.create({
     width: 200
   },
   editText: {
-    top: 200,
+    top: 180,
+    left: '80%',
+  },
+  logoutText: {
+    top: 180,
     left: '80%',
   }
 })
