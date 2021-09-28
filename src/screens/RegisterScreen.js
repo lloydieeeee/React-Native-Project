@@ -1,10 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {Button, Dimensions, StyleSheet, Text, TextInput, View} from 'react-native';
 
-export default function LoginScreen() {
+import auth from '@react-native-firebase/auth';
+
+export default function RegisterScreen({ navigation }) {
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+
+  const handleRegister = (userEmail, userPass) => {
+    auth()
+      .createUserWithEmailAndPassword(userEmail, userPass)
+      .then(() => {
+        console.log('User successfully registered');
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Register Screen</Text>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email Address"
@@ -13,8 +28,8 @@ export default function LoginScreen() {
           numberOfLines={1}
           autoCorrect={false}
           style={styles.input}
-          // value={email}
-          // onChangeText={userEmail => setEmail(userEmail)}
+          value={email}
+          onChangeText={userEmail => setEmail(userEmail)}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -23,12 +38,16 @@ export default function LoginScreen() {
           secureTextEntry={true}
           autoCapitalize="none"
           style={styles.input}
-          // value={password}
-          // onChangeText={userPassword => setPassword(userPassword)}
+          value={password}
+          onChangeText={userPassword => setPassword(userPassword)}
         />
       </View>
-      <Button title="Register" />
-      <Button title="Login" onPress={() => navigation.navigate('Login')} />
+      <View style={styles.button}>
+        <Button title="Register" onPress={() => handleRegister(email, password)} />
+      </View>
+      <View style={styles.button}>
+        <Button title="Login" onPress={() => navigation.navigate('Login')} />
+      </View>
     </View>
   );
 }
@@ -59,4 +78,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  button: {
+    width: Dimensions.get('window').width / 3.5,
+    height: Dimensions.get('window').height / 20,
+    marginBottom: 10,
+  }
 });

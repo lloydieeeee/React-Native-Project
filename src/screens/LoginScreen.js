@@ -1,10 +1,27 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {Button, Dimensions, StyleSheet, Text, TextInput, View} from 'react-native';
 
+import auth from '@react-native-firebase/auth';
+
 export default function LoginScreen({ navigation }) {
+  const [email, setEmail] = useState(null);
+  const [password, setPassword] = useState(null);
+
+  const handleLogin = (userEmail, userPass) => {
+    auth()
+      .signInWithEmailAndPassword('testmode@gmail.com', 'johnldsantos')
+      .then(() => {
+        console.log('User successfully login');
+        // setEmail(null);
+        // setPassword(null);
+      })
+      .catch((error) => {
+        console.error(error);
+      })
+  }
+
   return (
     <View style={styles.container}>
-      <Text>Login Screen</Text>
       <View style={styles.inputContainer}>
         <TextInput
           placeholder="Email Address"
@@ -13,8 +30,8 @@ export default function LoginScreen({ navigation }) {
           numberOfLines={1}
           autoCorrect={false}
           style={styles.input}
-          // value={email}
-          // onChangeText={userEmail => setEmail(userEmail)}
+          value={email}
+          onChangeText={userEmail => setEmail(userEmail)}
         />
       </View>
       <View style={styles.inputContainer}>
@@ -23,12 +40,16 @@ export default function LoginScreen({ navigation }) {
           secureTextEntry={true}
           autoCapitalize="none"
           style={styles.input}
-          // value={password}
-          // onChangeText={userPassword => setPassword(userPassword)}
+          value={password}
+          onChangeText={userPassword => setPassword(userPassword)}
         />
       </View>
-      <Button title="Login" />
-      <Button title="Register" onPress={() => navigation.navigate('Register')} />
+      <View style={styles.button}>
+        <Button title="Login" onPress={() => handleLogin(email, password)} />
+      </View>
+      <View style={styles.button}>
+        <Button title="Register" onPress={() => navigation.navigate('Register')} />
+      </View>
     </View>
   );
 }
@@ -59,4 +80,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  button: {
+    width: Dimensions.get('window').width / 3.5,
+    height: Dimensions.get('window').height / 20,
+    marginBottom: 10,
+  }
 });

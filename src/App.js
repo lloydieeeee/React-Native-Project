@@ -13,7 +13,7 @@ function DashboardScreen() {
   );
 }
 
-function MessageScreen() {
+function ChatScreen() {
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text>Message!</Text>
@@ -33,7 +33,7 @@ function MyTabs() {
   return (
     <Tab.Navigator>
       <Tab.Screen name="Dashboard" component={DashboardScreen} options={{ headerShown: false, tabBarHideOnKeyboard: true }} />
-      <Tab.Screen name="Message" component={MessageScreen} options={{ headerShown: false, tabBarHideOnKeyboard: true }} />
+      <Tab.Screen name="Chat" component={ChatScreen} options={{ headerShown: false, tabBarHideOnKeyboard: true }} />
       <Tab.Screen name="Account" component={AccountScreen} options={{ headerShown: false, tabBarHideOnKeyboard: true }} />
     </Tab.Navigator>
   );
